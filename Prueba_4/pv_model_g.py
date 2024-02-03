@@ -90,38 +90,8 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-
-
-def main():
-    # Crear un objeto de la clase PVModel
-    pv = PVModel(4, 3)
-    # Calcular el modelo PV
-    resultados, Vmpp, Impp, P_max = pv.modelo_pv(G=1000, T=273 + 25)
-
-    # Plot the P-V curve
-    plt.figure(figsize=(8, 6))
-    plt.plot(resultados['Voltaje (V)'], resultados['Potencia (W)'], label='P-V Curve')
-    plt.xlabel('Voltage (V)')
-    plt.ylabel('Power (W)')
-    plt.title('Power-Voltage Curve')
-    plt.grid()
-    plt.legend()
-    plt.savefig('P-V.png')
-
-    # Plot the I-V curve
-    plt.figure(figsize=(8, 6))
-    plt.plot(resultados['Corriente (A)'], resultados['Voltaje (V)'], label='I-V Curve')
-    plt.xlabel('Current (A)')
-    plt.ylabel('Voltage (V)')
-    plt.title('Current-Voltage Curve')
-    plt.grid()
-    plt.legend()
-    plt.savefig('I-V.png')
-
-
-    #print(resultados.head())
-    #print(f"Vmp = {Vmpp:.2f} V, Imp = {Impp:.2f} A, Pmax = {P_max:.2f} W")
+print(resultados.head())
+print(f"Vmp = {Vmpp:.2f} V, Imp = {Impp:.2f} A, Pmax = {P_max:.2f} W")
 
 if __name__ == "__main__":
     main()
