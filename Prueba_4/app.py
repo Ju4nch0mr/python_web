@@ -1,8 +1,8 @@
+from flask import Flask, render_template, request, jsonify
 import numpy as np
 from scipy.optimize import fsolve
 import pandas as pd
-import matplotlib.pyplot as plt
-from flask import Flask, render_template, request
+import json
 
 app = Flask(__name__)
 
@@ -71,24 +71,29 @@ class PVModel:
         P_max = resultados.loc[max_power_idx, 'Potencia (W)']
         return resultados, Vmpp, Impp, P_max
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
-    if request.method == 'POST':
-        G = float(request.form['G'])
-        T = float(request.form['T'])
-        num_panels_series = int(request.form['num_panels_series'])
-        num_panels_parallel = int(request.form['num_panels_parallel'])
-
-        pv = PVModel(num_panels_series, num_panels_parallel)
-        resultados, Vmpp, Impp, P_max = pv.modelo_pv(G, T)
-
-        return render_template('index.html',
-                               resultados=resultados.to_html(index=False, justify='center'),
-                               Vmpp=Vmpp, Impp=Impp, P_max=P_max, G=G, T=T,
-                               num_panels_series=num_panels_series,
-                               num_panels_parallel=num_panels_parallel)
-
     return render_template('index.html')
+
+@app.route('/calculate', methods=['POST'])
+def calculate():
+    data = request.get_json()
+    num_panels_series = data['num_panels_series']
+    num_panels_parallel = data['num_panels_parallel']
+    G = data['G']
+    T = data['T']
+
+    pv = PVModel(num_panels_series, num_panels_parallel)
+    resultados, Vmpp, Impp, P_max = pv.modelo_pv(G, T)
+
+    response = {
+        'Vmpp': float(Vmpp),
+        'Impp': float(Impp),
+        'P_max': float(P_max),
+        'data': resultados.to_dict('records')
+    }
+
+    return jsonify(response)
 
 if __name__ == '__main__':
     app.run(debug=True)
