@@ -90,8 +90,6 @@ def main():
 if __name__ == "__main__":
     main()
 
-print(resultados.head())
-print(f"Vmp = {Vmpp:.2f} V, Imp = {Impp:.2f} A, Pmax = {P_max:.2f} W")
 
 if __name__ == "__main__":
     main()
