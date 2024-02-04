@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>PV Model</title>
+</head>
+
+<body>
+    <h1>PV Model</h1>
+
+    <form method="post">
+        <label for="num_panels_series">Número de paneles en serie:</label>
+        <input type="number" id="num_panels_series" name="num_panels_series" value="1" min="1" required>
+        <br><br>
+        <label for="num_panels_parallel">Número de paneles en paralelo:</label>
+        <input type="number" id="num_panels_parallel" name="num_panels_parallel" value="1" min="1" required>
+        <br><br>
+        <label for="G">Irradiancia (W/m²):</label>
+        <input type="number" id="G" name="G" value="1000" min="1" required>
+        <br><br>
+        <label for="T">Temperatura (K):</label>
+        <input type="number" id="T" name="T" value="298" min="1" required>
+        <br><br>
+        <input type="submit" value="Calcular">
+    </form>
+
+    {% if resultados %}
+    <h2>Resultados:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Corriente (A)</th>
+                <th>Voltaje (V)</th>
+                <th>Potencia (W)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for index, row in resultados.iterrows %}
+            <tr>
+                <td>{{ row['Corriente (A)'] }}</td>
+                <td>{{ row['Voltaje (V)'] }}</td>
+                <td>{{ row['Potencia (W)'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p>Vmpp = {{ Vmpp }} V, Imp = {{ Impp }} A, Pmax = {{ P_max }} W</p>
+    {% endif %}
+</body>
+</html>
