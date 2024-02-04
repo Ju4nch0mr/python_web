@@ -2,9 +2,9 @@ from flask import Flask, render_template, request
 import numpy as np
 from scipy.optimize import fsolve
 import pandas as pd
-import matplotlib.pyplot as plt
 
 app = Flask(__name__)
+
 
 class PVModel:
     """
@@ -49,60 +49,48 @@ class PVModel:
         :param T:  Temperatura (K)
         :return:  DataFrame con los resultados, voltaje, corriente y potencia máximos
         """
-        # Validar los valores de irradiancia y temperatura
         self.validate_inputs(G, T)
-        # Cálculo de I_rs: corriente de saturación inversa
         I_rs = self.I_sc / (np.exp((self.q * self.V_oc) / (self.n * self.N_s * self.K * T)) - 1)
-        # Cálculo de I_o: corriente de saturación inversa
         I_o = I_rs * (T / self.T_n) * np.exp((self.q * self.E_g0 * (1 / self.T_n - 1 / T)) / (self.n * self.K))
-        # Cálculo de I_ph: corriente fotogenerada
         I_ph = (self.I_sc + self.k_i * (T - 298)) * (G / 1000)
-        # Creación de un vector de voltaje desde 0 hasta V_oc con 1000 puntos
         Vpv = np.linspace(0, self.V_oc, 1000)
-        # Inicialización de vectores de corriente y potencia
         Ipv = np.zeros_like(Vpv)
         Ppv = np.zeros_like(Vpv)
 
-        # Función para la ecuación del modelo PV
         def f(I, V):
             return (I_ph - I_o * (np.exp((self.q * (V + I * self.R_s)) / (self.n * self.K * self.N_s * T)) - 1) -
                     (V + I * self.R_s) / self.R_sh - I)
-        # Cálculo de la corriente para todo el array de voltaje usando fsolve y vectorización
-        Ipv = fsolve(f, self.I_sc * np.ones_like(Vpv), args=(Vpv))
-        Ppv = Vpv * Ipv  # Cálculo vectorizado de la potencia
 
-        # Creación de un DataFrame con resultados
+        Ipv = fsolve(f, self.I_sc * np.ones_like(Vpv), args=(Vpv))
+        Ppv = Vpv * Ipv
+
         resultados = pd.DataFrame({'Corriente (A)': Ipv, 'Voltaje (V)': Vpv, 'Potencia (W)': Ppv})
-        # Encontrar el punto de máxima potencia
         max_power_idx = resultados['Potencia (W)'].idxmax()
         Vmpp = resultados.loc[max_power_idx, 'Voltaje (V)']
         Impp = resultados.loc[max_power_idx, 'Corriente (A)']
         P_max = resultados.loc[max_power_idx, 'Potencia (W)']
-
         return resultados, Vmpp, Impp, P_max
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        num_panels_series = int(request.form['num_panels_series'])
-        num_panels_parallel = int(request.form['num_panels_parallel'])
         G = float(request.form['G'])
         T = float(request.form['T'])
+        num_panels_series = int(request.form['num_panels_series'])
+        num_panels_parallel = int(request.form['num_panels_parallel'])
 
         pv = PVModel(num_panels_series, num_panels_parallel)
         resultados, Vmpp, Impp, P_max = pv.modelo_pv(G, T)
 
+        top_10_results = resultados.nlargest(10, 'Potencia (W)')
+
         return render_template('index.html',
-                               num_panels_series=num_panels_series,
-                               num_panels_parallel=num_panels_parallel,
-                               G=G,
-                               T=T,
-                               resultados=resultados,
-                               Vmpp=Vmpp,
-                               Impp=Impp,
-                               P_max=P_max)
-    else:
-        return render_template('index.html')
+                               top_10_results=top_10_results.round(2).to_dict(orient='records'),
+                               Vmpp=Vmpp, Impp=Impp, P_max=P_max)
+
+    return render_template('index.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

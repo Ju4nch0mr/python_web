@@ -3,31 +3,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>PV Model</title>
 </head>
-
 <body>
     <h1>PV Model</h1>
-
     <form method="post">
-        <label for="num_panels_series">Número de paneles en serie:</label>
-        <input type="number" id="num_panels_series" name="num_panels_series" value="1" min="1" required>
-        <br><br>
-        <label for="num_panels_parallel">Número de paneles en paralelo:</label>
-        <input type="number" id="num_panels_parallel" name="num_panels_parallel" value="1" min="1" required>
-        <br><br>
         <label for="G">Irradiancia (W/m²):</label>
-        <input type="number" id="G" name="G" value="1000" min="1" required>
+        <input type="number" name="G" id="G" step="0.1" value="1000" required>
         <br><br>
         <label for="T">Temperatura (K):</label>
-        <input type="number" id="T" name="T" value="298" min="1" required>
+        <input type="number" name="T" id="T" step="0.1" value="298" required>
         <br><br>
-        <input type="submit" value="Calcular">
+        <label for="num_panels_series">Número de paneles en serie:</label>
+        <input type="number" name="num_panels_series" id="num_panels_series" value="4" required>
+        <br><br>
+        <label for="num_panels_parallel">Número de paneles en paralelo:</label>
+        <input type="number" name="num_panels_parallel" id="num_panels_parallel" value="3" required>
+        <br><br>
+        <button type="submit">Calcular</button>
     </form>
 
-    {% if resultados %}
-    <h2>Resultados:</h2>
+    {% if Vmpp %}
+    <h2>Punto de máxima potencia:</h2>
+    <p>Vmp = {{ Vmpp }} V, Imp = {{ Impp }} A, Pmax = {{ P_max }} W</p>
+    <h2>Top 10 Results:</h2>
     <table>
         <thead>
             <tr>
@@ -37,16 +36,15 @@
             </tr>
         </thead>
         <tbody>
-            {% for index, row in resultados.iterrows %}
+            {% for result in top_10_results %}
             <tr>
-                <td>{{ row['Corriente (A)'] }}</td>
-                <td>{{ row['Voltaje (V)'] }}</td>
-                <td>{{ row['Potencia (W)'] }}</td>
+                <td>{{ result.Corriente_(A) }}</td>
+                <td>{{ result.Voltaje_(V) }}</td>
+                <td>{{ result.Potencia_(W) }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <p>Vmpp = {{ Vmpp }} V, Imp = {{ Impp }} A, Pmax = {{ P_max }} W</p>
     {% endif %}
 </body>
 </html>
