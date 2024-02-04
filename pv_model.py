@@ -87,5 +87,22 @@ def main():
     print(resultados.head())
     print(f"Vmp = {Vmpp:.2f} V, Imp = {Impp:.2f} A, Pmax = {P_max:.2f} W")
 
+def main():
+    # Crear un objeto de clase PV
+    pv = PVModel(4, 3)
+    # Calcular el modelo PV
+    resultados, Vmpp, Impp, P_max = pv.modelo_pv(G=1000, T=273 + 25)
+    
+    # Add top 10 results table
+    top_10_results = resultados.nlargest(10, 'Potencia (W)')
+    print("\nTop 10 Results:")
+    print(top_10_results.round(2))
+
+    print(f"\nVmp = {Vmpp:.2f} V, Imp = {Impp:.2f} A, Pmax = {P_max:.2f} W")
+
+
 if __name__ == "__main__":
     main()
+
+
+    
