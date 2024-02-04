@@ -120,7 +120,7 @@ if __name__ == "__main__":
     main()
 
     pv = PVModel(4, 3)
-    resultados, Vmpp, Impp, P_max = pv.modelo_pv(G=1000, T=273+25)
+    resultados, Vmpp, Impp, P_max = pv.modelo_pv(G=10, T=273+25)
     html = print_results_table(pv, G=1000, T=273+25, resultados=resultados, Vmpp=Vmpp, Impp=Impp, P_max=P_max)
     
 

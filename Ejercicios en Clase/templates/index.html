@@ -1,13 +1,16 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
     <title>PV Model</title>
+    <meta> charset="UFT-8"
+    <meta> name="viewport"
+    content="width=device-width, inicial-scale=1.0"
 </head>
 <body>
     <h1>PV Model</h1>
     <h2>Power-Voltage Curve</h2>
-    <img src="{{ pv_pv_curve_b64 }}" alt="Power-Voltage Curve">
+    <img src="data:P-V.png,base64,{{plot_url}}"  alt="Grafico">
     <h2>Current-Voltage Curve</h2>
-    <img src="{{ pv_iv_curve_b64 }}" alt="Current-Voltage Curve">
+    <img src="data:I-V.png,base64,{{plot_url}}"  alt="Grafico">
 </body>
 </html>
