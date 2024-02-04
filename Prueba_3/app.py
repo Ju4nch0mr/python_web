@@ -3,7 +3,7 @@ import pickle
 import io
 import base64
 import json
-import pv_model
+import Prueba_5.pv_model as pv_model
 
 app = Flask(__name__)
 

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Panel Model</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        input[type="number"] {
+            flex-basis: 48%;
+            margin-bottom: 2rem;
+        }
+        #chart {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Solar Panel Model</h1>
+    <form id="pv-form">
+        <label for="num-panels-series">Number of Panels in Series:</label>
+        <input type="number" id="num-panels-series" name="num-panels-series" min="1" value="4">
+        <label for="num-panels-parallel">Number of Panels in Parallel:</label>
+        <input type="number" id="num-panels-parallel" name="num-panels-parallel" min="1" value="3">
+        <button type="submit">Calculate</button>
+    </form>
+    <div id="chart"></div>
+    <script src="app.js"></script>
+</body>
+</html>

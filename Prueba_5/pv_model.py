@@ -1,8 +1,8 @@
-# Importar libreríasimport numpy as npfrom scipy.optimize import fsolve
+# Importar librerías
 import numpy as np
 from scipy.optimize import fsolve
 import pandas as pd
-import matplotlib.pyplot as plt
+
 
 class PVModel:
     """
@@ -20,6 +20,7 @@ class PVModel:
         self.R_s = 0.39  # Resistencia en serie
         self.num_panels_series = num_panels_series  # Número de paneles en serie
         self.num_panels_parallel = num_panels_parallel  # Número de paneles en paralelo
+        # Ajustar los valores de I_sc, V_oc y N_s con el número de paneles en serie y en paralelo
         self.I_sc = 9.35 * num_panels_parallel  # Corriente de cortocircuito
         self.V_oc = 47.4 * num_panels_series  # Voltaje de circuito abierto
         self.N_s = 72 * num_panels_series  # Número de células en serie
@@ -76,27 +77,32 @@ class PVModel:
         Vmpp = resultados.loc[max_power_idx, 'Voltaje (V)']
         Impp = resultados.loc[max_power_idx, 'Corriente (A)']
         P_max = resultados.loc[max_power_idx, 'Potencia (W)']
-
-        # Plotting
-        plt.figure(figsize=(10, 5))
-        plt.plot(Vpv, Ppv, label='P-V Curve')
-        plt.axhline(y=P_max, color='r', linestyle='--', label=f'Pmax = {P_max:.2f} W')
-        plt.xlabel('Voltage (V)')
-        plt.ylabel('Power (W)')
-        plt.title('Power-Voltage Curve')
-        plt.legend()
-        plt.grid()
-        plt.show()
-
         return resultados, Vmpp, Impp, P_max
 
 def main():
     # Crear un objeto de la clase PVModel
-    pv = PVModel(4, 3)
+    pv = PVModel(4,3)
     # Calcular el modelo PV
-    resultados, Vmpp, Impp, P_max = pv.modelo_pv(G=1000, T=273 + 25)
+    resultados, Vmpp, Impp, P_max = pv.modelo_pv(G=1000, T=273+25)
     print(resultados.head())
     print(f"Vmp = {Vmpp:.2f} V, Imp = {Impp:.2f} A, Pmax = {P_max:.2f} W")
 
+def main():
+    # Crear un objeto de clase PV
+    pv = PVModel(4, 3)
+    # Calcular el modelo PV
+    resultados, Vmpp, Impp, P_max = pv.modelo_pv(G=1000, T=273 + 25)
+    
+    # Add top 10 results table
+    top_10_results = resultados.nlargest(10, 'Potencia (W)')
+    print("\nTop 10 Results:")
+    print(top_10_results.round(2))
+
+    print(f"\nVmp = {Vmpp:.2f} V, Imp = {Impp:.2f} A, Pmax = {P_max:.2f} W")
+
+
 if __name__ == "__main__":
     main()
+
+
+    
