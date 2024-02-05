@@ -5,6 +5,11 @@ En la presente compartimos los ejercicios en clase individual y el ejercicio fin
 
 El cual busca indicar al ingeniero la potencia máxima con los datos de temperatura y corriente. Este con su respetiva tabla de resultados, se realizaron varias pruebas de ejecución de las páginas web, las cuales puede encontrar en las carpetas denominadas Prueba.
 
+Para ejecutar el programa:
+- Se inicia estando en la consolo digitando python .\app.py
+- La aplicación WEB se puede ocnsultar en la siguiente ruta:  Running on http://127.0.0.1:5000
+- Allí digitamos los valores que se solicitan y se selecciona el botón "Calcular"
+- Como respuesta se tiene el resultado del cálculo para los valores ingresados y una tabal con todos los resultados.
 
 
 Los integrates del grupo somos:
