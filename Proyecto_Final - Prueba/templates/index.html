@@ -32,18 +32,11 @@
     </form>
     {% if Vmpp %}
         <h2 class="my-4 text-center">Resultados</h2>
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th>Corriente (A)</th>
-                <th>Voltaje (V)</th>
-                <th>Potencia (W)</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{ resultados }}
-            </tbody>
-        </table>
+        <body>
+            {% for table in resultados %}
+                {{ table|safe }}
+            {% endfor %}
+        </body>
         <p class="h3">Vmp = {{ '%.2f' % Vmpp }} V, Imp = {{ '%.2f' % Impp }} A, Pmax = {{ '%.2f' % P_max }} W</p>
     {% endif %}
     
