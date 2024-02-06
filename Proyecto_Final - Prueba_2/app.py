@@ -1,12 +1,13 @@
+from flask import Flask, render_template, request
 import numpy as np
 from scipy.optimize import fsolve
 import pandas as pd
 import matplotlib.pyplot as plt
-from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
 class PVModel:
+  
     """
     Clase para el modelo de un panel fotovoltaico.
     """
@@ -22,6 +23,7 @@ class PVModel:
         self.R_s = 0.39  # Resistencia en serie
         self.num_panels_series = num_panels_series  # Número de paneles en serie
         self.num_panels_parallel = num_panels_parallel  # Número de paneles en paralelo
+        # Ajustar los valores de I_sc, V_oc y N_s con el número de paneles en serie y en paralelo
         self.I_sc = 9.35 * num_panels_parallel  # Corriente de cortocircuito
         self.V_oc = 47.4 * num_panels_series  # Voltaje de circuito abierto
         self.N_s = 72 * num_panels_series  # Número de células en serie
@@ -49,46 +51,128 @@ class PVModel:
         :param T:  Temperatura (K)
         :return:  DataFrame con los resultados, voltaje, corriente y potencia máximos
         """
+        # Validar los valores de irradiancia y temperatura
         self.validate_inputs(G, T)
+        # Cálculo de I_rs: corriente de saturación inversa
         I_rs = self.I_sc / (np.exp((self.q * self.V_oc) / (self.n * self.N_s * self.K * T)) - 1)
+        # Cálculo de I_o: corriente de saturación inversa
         I_o = I_rs * (T / self.T_n) * np.exp((self.q * self.E_g0 * (1 / self.T_n - 1 / T)) / (self.n * self.K))
+        # Cálculo de I_ph: corriente fotogenerada
         I_ph = (self.I_sc + self.k_i * (T - 298)) * (G / 1000)
+        # Creación de un vector de voltaje desde 0 hasta V_oc con 1000 puntos
         Vpv = np.linspace(0, self.V_oc, 1000)
+        # Inicialización de vectores de corriente y potencia
         Ipv = np.zeros_like(Vpv)
         Ppv = np.zeros_like(Vpv)
 
+        # Función para la ecuación del modelo PV
         def f(I, V):
             return (I_ph - I_o * (np.exp((self.q * (V + I * self.R_s)) / (self.n * self.K * self.N_s * T)) - 1) -
                     (V + I * self.R_s) / self.R_sh - I)
-
+        # Cálculo de la corriente para todo el array de voltaje usando fsolve y vectorización
         Ipv = fsolve(f, self.I_sc * np.ones_like(Vpv), args=(Vpv))
-        Ppv = Vpv * Ipv
+        Ppv = Vpv * Ipv  # Cálculo vectorizado de la potencia
 
+        # Creación de un DataFrame con resultados
         resultados = pd.DataFrame({'Corriente (A)': Ipv, 'Voltaje (V)': Vpv, 'Potencia (W)': Ppv})
+        # Encontrar el punto de máxima potencia
         max_power_idx = resultados['Potencia (W)'].idxmax()
         Vmpp = resultados.loc[max_power_idx, 'Voltaje (V)']
         Impp = resultados.loc[max_power_idx, 'Corriente (A)']
         P_max = resultados.loc[max_power_idx, 'Potencia (W)']
         return resultados, Vmpp, Impp, P_max
 
-@app.route('/', methods=['GET', 'POST'])
+def main():
+    # Crear un objeto de la clase PVModel
+    pv = PVModel(4,3)
+    # Calcular el modelo PV
+    resultados, Vmpp, Impp, P_max = pv.modelo_pv(G=1000, T=273+25)
+    print(resultados.head())
+    print(f"Vmp = {Vmpp:.2f} V, Imp = {Impp:.2f} A, Pmax = {P_max:.2f} W")
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+def main():
+    # Crear un objeto de la clase PVModel
+    pv = PVModel(4, 3)
+    # Calcular el modelo PV
+    resultados, Vmpp, Impp, P_max = pv.modelo_pv(G=1000, T=273 + 25)
+
+    # Plot the P-V curve
+    plt.figure(figsize=(8, 6))
+    plt.plot(resultados['Voltaje (V)'], resultados['Potencia (W)'], label='P-V Curve')
+    plt.xlabel('Voltage (V)')
+    plt.ylabel('Power (W)')
+    plt.title('Power-Voltage Curve')
+    plt.grid()
+    plt.legend()
+
+    # Plot the I-V curve
+    plt.figure(figsize=(8, 6))
+    plt.plot(resultados['Corriente (A)'], resultados['Voltaje (V)'], label='I-V Curve')
+    plt.xlabel('Current (A)')
+    plt.ylabel('Voltage (V)')
+    plt.title('Current-Voltage Curve')
+    plt.grid()
+    plt.legend()
+
+    plt.show()
+
+    print(resultados.head())
+    print(f"Vmp = {Vmpp:.2f} V, Imp = {Impp:.2f} A, Pmax = {P_max:.2f} W")
+
+if __name__ == "__main__":
+    main()
+
+@app.route('/')
 def index():
-    if request.method == 'POST':
-        G = float(request.form['G'])
-        T = float(request.form['T'])
-        num_panels_series = int(request.form['num_panels_series'])
-        num_panels_parallel = int(request.form['num_panels_parallel'])
+    # Create a PVModel object
+    pv = PVModel(4, 3)
 
-        pv = PVModel(num_panels_series, num_panels_parallel)
-        resultados, Vmpp, Impp, P_max = pv.modelo_pv(G, T)
+    # Calculate the PV model
+    G = 1000
+    T = 273 + 25
+    resultados, Vmpp, Impp, P_max = pv.modelo_pv(G, T)
 
-        return render_template('index.html',
-                               resultados=resultados.to_html(index=False, justify='center'),
-                               Vmpp=Vmpp, Impp=Impp, P_max=P_max, G=G, T=T,
-                               num_panels_series=num_panels_series,
-                               num_panels_parallel=num_panels_parallel)
+    # Generate the P-V curve plot
+    pv_curve = plt.figure(figsize=(8, 6))
+    plt.plot(resultados['Voltaje (V)'], resultados['Potencia (W)'], label='P-V Curve')
+    plt.xlabel('Voltage (V)')
+    plt.ylabel('Power (W)')
+    plt.title('Power-Voltage Curve')
+    plt.grid()
+    plt.legend()
 
-    return render_template('index.html')
+    # Generate the I-V curve plot
+    iv_curve = plt.figure(figsize=(8, 6))
+    plt.plot(resultados['Corriente (A)'], resultados['Voltaje (V)'], label='I-V Curve')
+    plt.xlabel('Current (A)')
+    plt.ylabel('Voltage (V)')
+    plt.title('Current-Voltage Curve')
+    plt.grid()
+    plt.legend()
+
+    # Save the plots as base64-encoded PNG images
+    pv_curve_png = plt.gcf().canvas.print_png()
+    iv_curve_png = plt.gcf().canvas.print_png()
+
+    # Reset the plot figures
+    plt.clf()
+    plt.cla()
+    plt.close(pv_curve)
+    plt.close(iv_curve)
+
+    # Convert the PNG images to base64-encoded data URIs
+    pv_curve_datauri = "data:image/png;base64," + pv_curve_png.decode("utf-8")
+    iv_curve_datauri = "data:image/png;base64," + iv_curve_png.decode("utf-8")
+
+    # Render the HTML template with the plot data URIs
+    return render_template('index.html', pv_curve_datauri=pv_curve_datauri, iv_curve_datauri=iv_curve_datauri,
+                           Vmp=Vmpp, Imp=Impp, Pmax=P_max)
 
 if __name__ == '__main__':
     app.run(debug=True)
