@@ -1,9 +1,9 @@
 # python_web
 Buen día profesor Cristhiam, 
 
-En la presente compartimos los ejercicios en clase individual y el ejercicio final del proyecto de página web que se denominado Proyecto_Final.
+En la presente compartimos los ejercicios en clase individual y el ejercicio final del proyecto de página web que se ha denominado **Proyecto_Final**.
 
-El cual busca indicar al ingeniero la potencia máxima con los datos de temperatura y corriente. Este con su respetiva tabla de resultados, se realizaron varias pruebas de ejecución de las páginas web, las cuales puede encontrar en las carpetas denominadas Proyecto_Final - Prueba_(#).
+El anterior busca indicar al ingeniero la potencia máxima con los datos de temperatura y corriente. Este con su respetiva tabla de resultados, se realizaron varias pruebas de código y  ejecución de las páginas web, las cuales puede encontrar en las carpetas denominadas **Proyecto_Final - Prueba_(#)**.
 
 Para ejecutar el programa:
 - Se inicia estando en la consolo digitando python .\app.py
