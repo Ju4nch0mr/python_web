@@ -9,7 +9,7 @@ Para ejecutar el programa:
 - Se inicia estando en la consolo digitando python .\app.py
 - La aplicación WEB se puede ocnsultar en la siguiente ruta:  Running on http://127.0.0.1:5000
 - Allí digitamos los valores que se solicitan y se selecciona el botón "Calcular"
-- Como respuesta se tiene el resultado del cálculo para los valores ingresados y una tabal con todos los resultados.
+- Como respuesta se tiene el resultado del cálculo para los valores ingresados y una tabla con todos los resultados.
 
 
 Los integrates del grupo somos:
@@ -18,4 +18,6 @@ Jenny Paola Rincon.
 Harold Ricardo Restrepo.
 Pedro Angel Junco.
 Juan Sebastián Méndez Rodríguez.
+
+Los ejercicios individuales son de Juan Sebastián Méndez Rodríguez.
 
