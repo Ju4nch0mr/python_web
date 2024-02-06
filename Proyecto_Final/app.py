@@ -83,7 +83,7 @@ def index():
         resultados, Vmpp, Impp, P_max = pv.modelo_pv(G, T)
 
         return render_template('index.html',
-                               resultados=resultados.to_html(index=False, justify='center'),
+                               resultados=[resultados.to_html(index=False, justify='center')],
                                Vmpp=Vmpp, Impp=Impp, P_max=P_max, G=G, T=T,
                                num_panels_series=num_panels_series,
                                num_panels_parallel=num_panels_parallel)
